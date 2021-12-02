@@ -1,0 +1,33 @@
+GET http://localhost:3003/api/blogs
+
+###
+
+GET http://localhost:3003/api/blogs/61a8454bf7f9c0b5a2600448
+
+###
+
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+    "title": "First Blog",
+    "author": "mubarak",
+    "url": "http://awesomeblog.com",
+    "likes": 1000
+}
+
+###
+
+PUT http://localhost:3003/api/blogs/61a8454bf7f9c0b5a2600448
+Content-Type: application/json
+
+{
+    "title": "First Blog",
+    "author": "mubarak",
+    "url": "http://awesomeblog.com",
+    "likes": 10
+}
+
+###
+
+DELETE http://localhost:3003/api/blogs/61a8454bf7f9c0b5a2600448
