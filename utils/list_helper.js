@@ -1,5 +1,6 @@
 const _ = require('lodash')
 
+// eslint-disable-next-line no-unused-vars
 const dummy = blogs => {
     return 1
 }
@@ -20,10 +21,16 @@ const favoriteBlog = blogs => {
 
 const mostBlogs = blogs => {
     if (!blogs.length) return null
-    const blogsObject = _.countBy(blogs, (blog => blog.author))
-    const mappedBlogs = Object.keys(blogsObject).map(author => ({ author, blogs: blogsObject[author] }))
-    const sortedBlogs = mappedBlogs.sort((a, b) => b.blogs - a.blogs)
+    const blogsCountByAuthor = _(blogs).groupBy('author').map((item, author) => ({ author, blogs: item.length})).value()
+    const sortedBlogs = blogsCountByAuthor.sort((a, b) => b.blogs - a.blogs)
     return sortedBlogs[0]
 }
 
-module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs }
+const mostLikes = blogs => {
+    if (!blogs.length) return null
+    const blogsByLikes = _(blogs).groupBy('author').map((item, author) => ({ author, likes: _.sumBy(item, 'likes') })).value()
+    const sortedData = blogsByLikes.sort((a, b) => b.likes - a.likes)
+    return sortedData[0]
+}
+
+module.exports = { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes }
