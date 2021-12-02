@@ -1,52 +1,38 @@
 const app = require('express').Router()
 const Blog = require('../models/blog')
 
-app.get('/', (req, res) => {
-    Blog.find({}).then(blogs => {
-        res.json(blogs)
-    })
+app.get('/', async (req, res) => {
+    const blogs = await Blog.find({})
+    res.json(blogs)
 })
 
-app.get('/:id', (req, res, next) => {
+app.get('/:id', async (req, res) => {
     const { id } = req.params
-    Blog.findById(id)
-        .then(note => {
-            if (note) {
-                res.json(note)
-            } else {
-                res.status(404).end()
-            }
-        })
-        .catch(error => next(error))
+    const blog = await Blog.findById(id)
+    if (blog) {
+        res.json(blog)
+    } else {
+        res.status(404).end()
+    }
 })
 
-app.post('/', (req, res, next) => {
-    console.log(req.body)
+app.post('/', async (req, res) => {
     const { title, author, url, likes } = req.body
     const blog = new Blog({ title, author, url, likes })
-    blog.save()
-        .then(savedBlog => {
-            res.json(savedBlog)
-        })
-        .catch(error => next(error))
+    await blog.save()
+    res.json(blog)
 })
 
-app.delete('/:id', (req, res, next) => {
+app.delete('/:id', async (req, res) => {
     const { id } = req.params
-    Blog.findByIdAndRemove(id)
-        .then(() => res.status(204).end())
-        .catch(error => next(error))
+    await Blog.findByIdAndRemove(id)
+    res.status(204).end()
 })
 
-app.put('/:id', (req, res, next) => {
+app.put('/:id', async (req, res) => {
     const { id } = req.params
-    const { title, author, url, likes } = req.body
-    const blog = { title, author, url, likes }
-    Blog.findByIdAndUpdate(id, blog, { new: true })
-        .then(updatedBlog => {
-            res.json(updatedBlog)
-        })
-        .catch(error => next(error))
+    const blog = await Blog.findByIdAndUpdate(id, req.body, { new: true })
+    res.json(blog)
 })
 
 module.exports = app
