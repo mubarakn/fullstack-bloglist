@@ -65,12 +65,31 @@ beforeEach(async () => {
     }
 }, 100000)
 
-describe('when adding a blog without valid token throw error', () => {
+describe('adding blogs', () => {
     test('throw unauthorized error if no valid token provided', async () => {
         await api
             .post('/api/blogs')
             .send({ title: 'test title', author: 'test author', url: 'test url' })
             .expect(401)
+    })
+
+    test('adding blogs with valid auth token saves successfully', async () => {
+        await api
+            .post('/api/blogs')
+            .send({
+                title: 'Added new blog',
+                author: 'Shabeer',
+                url: 'http://shabeer.com',
+                likes: 1
+            })
+            .set('Authorization', `Bearer ${token}`)
+            .expect(200)
+
+        const result = await api
+            .get('/api/blogs')
+            .set('Authorization', `Bearer ${token}`)
+        
+        expect(result.body).toHaveLength(initialBlogs.length + 1)
     })
 })
 
@@ -112,19 +131,4 @@ describe('viewing a specific note', () => {
         expect(response.body.likes).toBe(0)
     })
     
-})
-
-test('adding blog saves successfully', async () => {
-    await api
-        .post('/api/blogs')
-        .send({
-            title: 'Added new blog',
-            author: 'Shabeer',
-            url: 'http://shabeer.com',
-            likes: 1
-        })
-        .set('Authorization', `Bearer ${token}`)
-
-    const result = await api.get('/api/blogs')
-    expect(result.body).toHaveLength(initialBlogs.length + 1)
 })
