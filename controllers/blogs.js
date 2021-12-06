@@ -50,16 +50,13 @@ app.delete('/:id', async (req, res) => {
 
 app.put('/:id', async (req, res) => {
     const { id } = req.params
-    const { title, author, url, likes } = req.body
     const blog = await Blog.findById(id)
-    if (blog.user.toString() === req.user.id) {
-        blog.title = title
-        blog.author = author
-        blog.url = url
-        blog.likes = likes
-        await blog.save()
+    if (blog.user.toString() === req.user.id.toString()) {
+        const newBlog = await Blog.findByIdAndUpdate(id, req.body, { new: true })
+        res.json(newBlog)
+        return
     }
-    res.json(blog)
+    res.status(403).json({ error: `You don't have rights to udpate the blog`})
 })
 
 module.exports = app
